@@ -46,10 +46,13 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint32_t adcRawData ;
+uint32_t sum_temp ,sum_in0,realtemp,realin0;
+float finaltemp,finalin0 ;
+
 typedef struct
 {
-	uint16_t in0 ;
 	uint16_t temp ;
+	uint16_t in0 ;
 }adcDMAStructure ;
 adcDMAStructure adcDMA[10];
 
@@ -114,6 +117,36 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  HAL_Delay(1000);
+
+	  int i ;
+	  for (i=0 ;i<10 ;i++)
+	  {
+		  if(i==0)
+		  {
+			  sum_temp = 0;
+			  sum_in0 = 0;
+			  sum_in0 = sum_in0 + adcDMA[i].in0 ;
+			  sum_temp = sum_temp +  adcDMA[i].temp ;
+		  }
+		  else if(i==9)
+		  {
+			  sum_in0 = sum_in0 + adcDMA[i].in0;
+			  sum_temp = sum_temp + adcDMA[i].temp;
+			  realtemp = sum_temp/10 ;
+			  realin0 = sum_in0/10 ;
+			  finalin0 = (5.0/3171)*realin0;
+			  finaltemp = ((22.0/2725)*realtemp)+273 ;
+
+		  }
+		  else
+		  {
+		  sum_temp =  sum_temp + adcDMA[i].in0 ;
+		  sum_in0 = sum_in0 + adcDMA[i].in0 ;
+		  }
+	  }
+
+
 
   }
   /* USER CODE END 3 */
